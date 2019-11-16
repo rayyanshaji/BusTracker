@@ -1,0 +1,57 @@
+﻿
+@{
+    ViewData["Title"] = "Customer Alerts";
+}
+
+<h1>Customer Alerts</h1>
+<style>
+    #floating-panel {
+        position: unset;
+        top: 10px;
+        left: 25%;
+        z-index: 5;
+        background-color: #fff;
+        border: 1px solid #999;
+        text-align: justify;
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+      }
+</style>
+<div id="floating-panel">
+    <script>
+        var myArray = [
+            {
+                "display": "CTA Alerts",
+                "url": "http://www.transitchicago.com/api/1.0/alerts.aspx?activeonly=true&routeid=red,blue,brown,3,4,26,29,65,66,126,147"
+            },
+            {
+                "display": "CTA Routes",
+                "url": "http://www.transitchicago.com/api/1.0/routes.aspx?routeid=red,blue,brown,3,4,26,29,65,66,126,147"
+            },
+            {
+                "display": "CTA Display",
+                "url": "http://www.transitchicago.com/diydisplay/?s1=15241&n1=Michigan+%2b+Monroe&s2=1115&n2=STATE+%2b+ADAMS&s3=1119&n3=Michigan+%26+Randolph&s4=77&n4=Adams+%2b+Wabash&s5=40760&s6=41320&s7=18223&n7=Chicago+%26+State+(Red+Line)&s8=751&n8=Illinois+(Lower)+%26+Michigan&alerts=126,26,29,301,147,4,3,Blue,Red,66,65,308,Brown&bn=Commuter%27s+Companion"
+            }
+        ];
+
+        myFunction(myArray);
+
+        function myFunction(arr) {
+            var out = "";
+            var i;
+            for (i = 0; i < arr.length; i++) {
+                out += '<a href="' + arr[i].url + '">' +
+                    arr[i].display + '</a><br>';
+            }
+            document.getElementById("floating-panel").innerHTML = out;
+        }
+    </script>
+    <script src="http://www.transitchicago.com/api/1.0/alerts.aspx?activeonly=true&routeid=red,blue,brown,3,4,26,29,65,66,126,147" async defer>
+    </script>
+    <script src="http://www.transitchicago.com/api/1.0/routes.aspx?routeid=red,blue,brown,3,4,26,29,65,66,126,147" async defer>
+    </script>
+    <script src="http://www.transitchicago.com/diydisplay/?s1=15241&n1=Michigan+%2b+Monroe&s2=1115&n2=STATE+%2b+ADAMS&s3=1119&n3=Michigan+%26+Randolph&s4=77&n4=Adams+%2b+Wabash&s5=40760&s6=41320&s7=18223&n7=Chicago+%26+State+(Red+Line)&s8=751&n8=Illinois+(Lower)+%26+Michigan&alerts=126,26,29,301,147,4,3,Blue,Red,66,65,308,Brown&bn=Commuter%27s+Companion" async defer>
+    </script>
+
+</div>

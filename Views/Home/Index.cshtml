@@ -1,0 +1,204 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@model BusTracker.Models.Location
+<style>
+    /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+     #map {
+        height: 400px;
+        width: 3500px;
+      }
+     html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      .controls {
+        margin-top: 10px;
+        border: 1px solid transparent;
+        border-radius: 2px 0 0 2px;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        height: 32px;
+        outline: none;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      }
+       #floating-panel {
+        position: sticky;
+        top: 10px;
+        left: 25%;
+        z-index: 5;
+        background-color: #fff;
+        border: 1px solid #999;
+        text-align: justify;
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        width: 3000px;
+      }
+      #origin-input,
+      #destination-input {
+        background-color: #fff;
+        font-family: Roboto;
+        font-size: 15px;
+        font-weight: 300;
+        margin-left: 12px;
+        padding: 0 11px 0 13px;
+        text-overflow: ellipsis;
+        width: 300px;
+      }
+
+      #origin-input:focus,
+      #destination-input:focus {
+        border-color: #4d90fe;
+      }
+      #mode-selector {
+        color: #fff;
+        background-color: #4d90fe;
+        margin-left: 12px;
+        padding: 5px 11px 0px 11px;
+      }
+
+      #mode-selector label {
+        font-family: Roboto;
+        font-size: 13px;
+        font-weight: 300;
+      }
+      .button {
+        background-color: #008CBA; /* Blue */
+        border: none;
+        color: white;
+        padding: 10px 24px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        margin: 4px 2px;
+        cursor: pointer;
+       }
+      print
+        #map {
+          height: 500px;
+          margin: 0;
+        }
+        #floating-panel {
+            margin: 0;
+        }
+</style>
+   
+<div class="row">
+      <div style="display: none" asp-controller="Home" asp-action="Insert">
+        <input id="origin-input" class="controls" type="text" input asp-for="OriginAddress"
+               placeholder="Enter an starting location">
+        <br>
+        <input id="destination-input" class="controls" type="text" asp-for="DestinationAddress"
+               placeholder="Enter a destination location">
+        <div id="mode-selector" class="controls">
+            <form asp-controller="Home" asp-action="Insert" method="post">
+            <input type="submit" name="type" id="changemode-transit" value="Save Your Trip"> <br/>
+            </form>
+        </div>
+      </div>
+
+      <div id="map"></div>
+      <br>
+      <div id="floating-panel"></div>
+        <script>
+            function initMap() {
+                var map = new google.maps.Map(document.getElementById('map'), {
+                    mapTypeControl: false,
+                    zoom: 13,
+                    center: { lat: 41.88425, lng: -87.63245 }
+                });
+                new AutocompleteDirectionsHandler(map);
+            }
+
+            function AutocompleteDirectionsHandler(map) {
+                this.map = map;
+                this.originPlaceId = null;
+                this.destinationPlaceId = null;
+                this.travelMode = 'TRANSIT';
+                this.directionsService = new google.maps.DirectionsService;
+                this.directionsRenderer = new google.maps.DirectionsRenderer;
+                this.directionsRenderer.setMap(map);
+                this.directionsRenderer.setPanel(document.getElementById('floating-panel')); 
+
+                var transitLayer = new google.maps.TransitLayer();
+                transitLayer.setMap(map);
+
+                var originInput = document.getElementById('origin-input');
+                var destinationInput = document.getElementById('destination-input');
+                var modeSelector = document.getElementById('mode-selector');
+
+                var originAutocomplete = new google.maps.places.Autocomplete(originInput);
+                // Specify just the place data fields that you need.
+                originAutocomplete.setFields(['place_id']);
+
+                var destinationAutocomplete = new google.maps.places.Autocomplete(destinationInput);
+                // Specify just the place data fields that you need.
+                destinationAutocomplete.setFields(['place_id'])
+
+                this.setupClickListener('changemode-transit', 'TRANSIT');
+
+                this.setupPlaceChangedListener(originAutocomplete, 'ORIG');
+                this.setupPlaceChangedListener(destinationAutocomplete, 'DEST');
+
+                this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(originInput);
+                this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(destinationInput);
+                this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(modeSelector);
+            }
+
+            // Sets a listener on the submit button to change the filter type on Places
+            // Autocomplete.
+            AutocompleteDirectionsHandler.prototype.setupClickListener = function (id, mode) {
+                var submitButton = document.getElementById(id);
+                var me = this;
+
+                submitButton.addEventListener('click', function () {
+                    me.travelMode = mode;
+                    me.route();
+                });
+            };
+
+            AutocompleteDirectionsHandler.prototype.setupPlaceChangedListener = function (autocomplete, mode) {
+                var me = this;
+                autocomplete.bindTo('bounds', this.map);
+
+                autocomplete.addListener('place_changed', function () {
+                    var place = autocomplete.getPlace();
+
+                    if (!place.place_id) {
+                        window.alert('Please select an option from the dropdown list.');
+                        return;
+                    }
+                    if (mode === 'ORIG') {
+                        me.originPlaceId = place.place_id;
+                    } else {
+                        me.destinationPlaceId = place.place_id;
+                    }
+                    me.route();
+                });
+            };
+
+            AutocompleteDirectionsHandler.prototype.route = function () {
+                if (!this.originPlaceId || !this.destinationPlaceId) {
+                    return;
+                }
+                var me = this;
+
+                this.directionsService.route({
+                    origin: {'placeId': this.originPlaceId },
+                    destination: {'placeId': this.destinationPlaceId },
+                    travelMode: this.travelMode
+                }, function (response, status) {
+                    if (status === 'OK') {
+                        me.directionsRenderer.setDirections(response);
+                    } else {
+                        window.alert('Directions request failed due to ' + status);
+                    }
+                });
+            }
+ 
+        </script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByddbX3zsMlNB4ibeXGF1ajZlSGGkaMII&libraries=places&callback=initMap"
+                async defer></script>
+    </div>

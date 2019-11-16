@@ -1,0 +1,35 @@
+﻿
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Do you really want to delete the location?</h1>
+@model BusTracker.Models.Location
+
+<form asp-controller="Home" asp-action="Delete" method="post">
+
+    <input type="hidden" name="Id"
+           value="@Model.Id.ToString()" />
+
+    <table border="1" cellpadding="10">
+        <tr>
+            <td>Location ID :</td>
+            <td>@Model.LocationID</td>
+        </tr>
+        <tr>
+            <td>Starting Address :</td>
+            <td>@Model.OriginAddress</td>
+        </tr>
+        <tr>
+            <td>Destination Address :</td>
+            <td>@Model.DestinationAddress</td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <button type="submit">Delete</button>
+            </td>
+        </tr>
+    </table>
+</form>
+
+

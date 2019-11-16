@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "Index2";
+}
+
+<h1>Update Location Information</h1>
+@model BusTracker.Models.Location
+
+<a asp-controller="Home" asp-action="Index2" method="post">
+    Add New Location
+</a>
+    <table border="1" cellpadding="10">
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>@item.LocationID</td>
+            <td>@item.OriginAddress</td>
+            <td>@item.DestinationAddress</td>
+            <td>
+                <a asp-controller="Home" asp-action="Update"
+                   asp-route-id="@item.Id">Edit</a>
+            </td>
+            <td>
+                <a asp-controller="Home" asp-action="ConfirmDelete"
+                   asp-route-id="@item.Id">Delete</a>
+            </td>
+            <td>
+                <a asp-controller="Home" asp-action="Index2">Go</a>
+            </td>
+        </tr>
+        }
+    </table>

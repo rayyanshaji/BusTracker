@@ -1,0 +1,68 @@
+﻿
+@{
+    ViewData["Title"] = "Locations";
+}
+
+@model List<BusTracker.Models.Location>
+
+    <style>
+        .button {
+            background-color: #008CBA; /* Blue */
+            border: none;
+            color: white;
+            padding: 10px 24px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
+
+<h1>@ViewData["Title"]</h1>
+
+<h2>@TempData["Message"]</h2>
+
+<a asp-controller="Home" asp-action="Insert" method="post">
+    Add New Location
+</a>
+
+<br />
+<br />
+
+
+<table border="1" cellpadding="10">
+    @foreach (var item in Model)
+    {
+    <tr>
+        <td>@item.LocationID</td>
+        <td>@item.OriginAddress</td>
+        <td>@item.DestinationAddress</td>
+        <td>
+            <a asp-controller="Home" asp-action="Update"
+               asp-route-id="@item.Id">Edit</a>
+        </td>
+        <td>
+            <a asp-controller="Home" asp-action="ConfirmDelete"
+               asp-route-id="@item.Id">Delete</a>
+        </td>
+    </tr>
+    }
+</table>
+

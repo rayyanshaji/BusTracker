@@ -1,0 +1,58 @@
+﻿
+@{
+    ViewData["Title"] = "Insert";
+}
+
+@model BusTracker.Models.Location
+<style>
+    .button {
+  background-color: #008CBA; /* Blue */
+  border: none;
+  color: white;
+  padding: 10px 24px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+
+<h1>Save the Starting and Destination Addresses</h1>
+
+<h2>@ViewBag.Message</h2>
+
+<form asp-controller="Home" asp-action="Insert"
+      method="post">
+    <table border="1" cellpadding="10">
+        <tr>
+            <td>Location ID :</td>
+            <td><input asp-for="LocationID" /></td>
+        </tr>
+        <tr>
+            <td>Starting Address :</td>
+            <td><input asp-for="OriginAddress" /></td>
+        </tr>
+        <tr>
+            <td>Destination Address :</td>
+            <td><input asp-for="DestinationAddress" /></td>
+        </tr>
+    </table>
+    <button type="submit" class="button">Save</button>
+</form>
+
